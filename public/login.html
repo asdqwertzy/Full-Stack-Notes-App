@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/5/54/Cyberpunk_2077_favicon.png">
+</head>
+
+<body class="login-page">
+    <div class="main">
+        <h1>Login</h1>
+        <form id="loginForm">
+            <label for="usernameField">Username:</label>
+            <input id="usernameField" />
+            <label for="passwordField">Password:</label>
+            <input id="passwordField" type="password">
+            <button type="button">Login</button>
+        </form>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById("loginForm")
+
+        const serverMessage = document.createElement("h4")
+        serverMessage.style.color = "red";
+        serverMessage.style.margin = "8px 0";
+        loginForm.prepend(serverMessage);
+
+        let accessToken = null;
+
+        function setAccessToken(token) {
+            accessToken = token;
+        }
+
+        async function loginUser() {
+            const username = document.getElementById("usernameField").value.trim();
+            const password = document.getElementById("passwordField").value.trim();
+
+            if (!username || !password) {
+                serverMessage.textContent = "Username and password are required";
+                return;
+            }
+
+            try {
+                const res = await fetch("/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    serverMessage.textContent = data.error || "Login failed.";
+                    return;
+                }
+                setAccessToken(data.accessToken);
+                sessionStorage.setItem("accessToken", data.accessToken);
+                serverMessage.style.color = "green";
+                serverMessage.textContent = "Login successful. Redirecting in 3 seconds..."
+                setTimeout(() => {
+                    window.location.href = "/index.html";
+                }, 3000);
+            }
+            catch (err) {
+
+                console.error(err);
+                serverMessage.textContent = "Network error";
+            }
+        }
+
+        const button = loginForm.querySelector("button");
+        button.addEventListener("click", loginUser);
+
+        loginForm.addEventListener("submit", e => {
+            e.preventDefault();
+            loginUser();
+        });
+
+    </script>
+</body>
+
+</html>

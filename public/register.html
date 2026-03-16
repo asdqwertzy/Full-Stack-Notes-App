@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/5/54/Cyberpunk_2077_favicon.png">
+</head>
+
+<body class="register-page">
+    <div class="main">
+        <h1>Register</h1>
+        <form id="registerForm">
+            <label for="usernameField">Username:</label>
+            <input id="usernameField" />
+            <label for="passwordField">Password:</label>
+            <input id="passwordField" type="password">
+            <button type="button">Register</button>
+    </div>
+
+    <script>
+        const registerForm = document.getElementById("registerForm")
+        const serverMessage = document.createElement("h4")
+        serverMessage.style.color = "red";
+        serverMessage.style.margin = "8px 0";
+        registerForm.prepend(serverMessage);
+
+        async function registerUser() {
+            const username = document.getElementById("usernameField").value.trim();
+            const password = document.getElementById("passwordField").value.trim();
+
+            if (!username || !password) {
+                serverMessage.textContent = "Username AND password are required.";
+                return;
+            }
+            try {
+                const res = await fetch("/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                })
+                const data = await res.json();
+                if (!res.ok) {
+                    serverMessage.textContent = data.error || "Registration failed";
+                    return;
+                }
+                serverMessage.style.color = "green";
+                serverMessage.textContent = "Registration successful. Redirecting to login page in 3 seconds..."
+                setTimeout(() => {
+                    window.location.href = "/login.html";
+                }, 3000);
+            }
+            catch (err) {
+                console.error(err)
+                serverMessage.textContent = "Network error"
+            }
+        }
+
+        const button = registerForm.querySelector("button");
+        button.addEventListener("click", registerUser);
+
+        registerForm.addEventListener("submit", e => {
+            e.preventDefault();
+            registerUser();
+        });
+
+    </script>
+</body>
+
+</html>
