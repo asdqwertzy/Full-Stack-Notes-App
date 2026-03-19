@@ -1,13 +1,12 @@
 require("dotenv").config();
+
 const express = require("express");
 const authenticate = require("./middleware/authenticate");
-
 const authRegisterRouter = require("./auth/register");
 const authLoginRouter = require("./auth/login");
 const csrfProtection = require("./middleware/csrf");
 const prisma = require("./prismaClient");
 const { login, refresh } = require("./services/authService");
-
 const cookieParser = require("cookie-parser");
 
 
@@ -22,20 +21,15 @@ process.on("unhandledRejection", (reason, promise) => {
 const app = express();
 const port = 8080;
 
-
 app.use(express.json());
 app.use(cookieParser());
 app.use("/auth/csrf", require("./auth/csrfRoute"));
 app.use(express.static('public'));
 
-
 app.use("/auth", authRegisterRouter);
 app.use("/auth", authLoginRouter);
 
-
-
 app.use("/api", authenticate);
-
 
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);
