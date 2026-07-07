@@ -44,7 +44,6 @@ async function fetchWithAuth(url, options = {}) {
 
     let res = await fetch(url, options);
 
-
     if (res.status === 401) {
         const refreshRes = await fetch("/auth/refresh", { method: "POST", credentials: "include" });
         if (refreshRes.ok) {
@@ -88,8 +87,6 @@ async function saveServerNote() {
     try {
         const res = await notesClient.addNote(text);
         if (!res || !res.note) throw new Error("Add failed");
-
-      
         await loadServer(state.currentPage);
         serverMessage.textContent = "";
         inputField.value = "";

@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const prisma = require("../prismaClient")
-const JWT_SECRET = process.env.JWT_SECRET;
-const REFRESH_SECRET = process.env.REFRESH_SECRET
+const { JWT_SECRET, REFRESH_SECRET } = require("../config/env");
+ 
 
 
 
@@ -11,12 +11,11 @@ async function login(username, password) {
     if (!user) {
         throw new Error("Invalid credentials -- authService")
     }
-    console.log({ username, password, userPassword: user.password })
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
         throw new Error("Invalid credentials -- authService")
     }
-    console.log("JWT_SECRET:", JWT_SECRET, "REFRESH_SECRET:", REFRESH_SECRET);
+    
 
     const accessToken = jwt.sign(
         { id: user.id, type: "access" },

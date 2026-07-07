@@ -31,18 +31,13 @@ router.post("/refresh", async (req, res) => {
     try {
         const oldToken = req.cookies.refreshToken;
         if (!oldToken) return res.sendStatus(401);
-
-        const { newAccessToken, newRefreshToken } = await authService.refresh(oldToken);
-
-       
+        const { newAccessToken, newRefreshToken } = await authService.refresh(oldToken); 
         res.cookie("refreshToken", newRefreshToken, {
             httpOnly: true,
             sameSite: "Strict",
-            secure: false,
+            secure: process.env.NODE_ENV === "production",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-
-        
         res.json({ accessToken: newAccessToken });
     } catch (err) {
         console.error("Refresh error:", err);

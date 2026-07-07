@@ -23,7 +23,6 @@
 
     <script>
         const loginForm = document.getElementById("loginForm")
-
         const serverMessage = document.createElement("h4")
         serverMessage.style.color = "red";
         serverMessage.style.margin = "8px 0";
@@ -65,7 +64,6 @@
                 }, 3000);
             }
             catch (err) {
-
                 console.error(err);
                 serverMessage.textContent = "Network error";
             }

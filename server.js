@@ -8,7 +8,7 @@ const csrfProtection = require("./middleware/csrf");
 const prisma = require("./prismaClient");
 const { login, refresh } = require("./services/authService");
 const cookieParser = require("cookie-parser");
-
+const loginLimiter = require('./middleware/rateLimiter')
 
 process.on("uncaughtException", (err) => {
     console.error("Uncaught Exception:", err);
@@ -20,11 +20,16 @@ process.on("unhandledRejection", (reason, promise) => {
 
 const app = express();
 const port = 8080;
+const helmet = require("helmet");
+
 
 app.use(express.json());
 app.use(cookieParser());
 app.use("/auth/csrf", require("./auth/csrfRoute"));
 app.use(express.static('public'));
+app.use(helmet());
+app.use("/auth/login", loginLimiter)
+
 
 app.use("/auth", authRegisterRouter);
 app.use("/auth", authLoginRouter);
